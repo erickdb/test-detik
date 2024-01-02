@@ -36,4 +36,22 @@ class kategoriController extends Controller
 
         return redirect()->route('kategori.dashboard')->with('success', 'kategori berhasil ditambahkan.');
     }
+    public function viewEditKategoriDashboard($id)
+    {
+        $kategori = Kategori::find($id);
+        return view('dashboard_admin.pages.edit.edit_kategori', compact('kategori'));
+    }
+    public function editKategoriDashboard(Request $request, $id)
+    {
+        
+        $request->validate([
+            'nama_kategori' => 'required|string|max:255',
+        ]);
+
+        $kategori = Kategori::find($id);
+        $kategori->nama_kategori = $request->nama_kategori;
+        $kategori->save();
+
+        return redirect()->route('kategori.dashboard')->with('success', 'kategori berhasil diedit.');
+    }
 }

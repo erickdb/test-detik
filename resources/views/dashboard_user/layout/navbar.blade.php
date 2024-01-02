@@ -29,7 +29,7 @@
                             <ul class="nav collapse parent show" data-bs-parent="#navbarVerticalCollapse" id="nv-home">
                                 <li class="collapsed-nav-item-title d-none">Home</li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="" data-bs-toggle=""
+                                    <a class="nav-link active" href="{{ route('user') }}" data-bs-toggle=""
                                         aria-expanded="false">
                                         <div class="d-flex align-items-center"><span
                                                 class="nav-link-text">Dashboard</span></div>
@@ -54,7 +54,7 @@
                             <ul class="nav collapse parent show" data-bs-parent="#navbarVerticalCollapse" id="nv-management">
                                 <li class="collapsed-nav-item-title d-none">Management</li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="" data-bs-toggle=""
+                                    <a class="nav-link active" href={{ route('user.buku.dashboard') }} data-bs-toggle=""
                                         aria-expanded="false">
                                         <div class="d-flex align-items-center"><span
                                                 class="nav-link-text">Buku</span></div>
@@ -133,7 +133,7 @@
                             <hr />
                             {{-- sign out --}}
                             <div class="px-3 mb-3 ">
-                                <form class="bg-transparent" action={{ route('sesi.logout') }} method="GET"> 
+                                <form class="bg-transparent" action={{ route('sesi.logout.user') }} method="GET"> 
                                     @csrf
                                     <button type="submit" class="btn btn-phoenix-secondary d-flex flex-center w-100"><span class="me-2" data-feather="log-out"></span> Logout</button>
                                 </form>

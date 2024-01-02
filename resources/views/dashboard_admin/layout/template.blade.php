@@ -281,6 +281,10 @@
         $(document).ready(function() {
             $('#myTable').DataTable();
         });
+        // $(".filter-kategori").on('change',function(){
+        //     let kategori = $("#filter-kategori").val()
+        //     console.log([kategori])
+        // })
     </script>
 </body>
 

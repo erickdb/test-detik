@@ -1,10 +1,15 @@
 @extends('dashboard_admin.layout.template')
 
-@section('title', 'PWH | Kategori')
+@section('title', 'Admin | Kategori')
 
 @section('content')
     <div class="container">
         <h1 class="mb-5">Kategori</h1>
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
         <div class="d-flex mb-3">
             <a href="{{ route('kategori.view.add') }}" class="btn btn-primary ms-auto">Tambah</a>
         </div>
@@ -26,7 +31,7 @@
                         <td class="text-center">{{ ucfirst($row->nama_kategori) }}</td>
                         <td class="text-center">
                             <div class="d-flex align-items-center justify-content-center gap-3">
-                                <a href="" class=""><i
+                                <a href="{{ route('kategori.view.edit',['id' => $row->id]) }}" class=""><i
                                         class="bi bi-pencil-square" data-toggle="tooltip" title="Edit"></i></a>
 
                                 <form class="delete" method="POST" action={{ route('kategori.delete',['id' => $row->id]) }}

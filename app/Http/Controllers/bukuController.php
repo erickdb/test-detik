@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\buku;
 use App\Models\Kategori;
-use Illuminate\Support\Str;
+use App\Exports\BukuExport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 
 class bukuController extends Controller
@@ -20,14 +23,25 @@ class bukuController extends Controller
         return view("", $data);
     }
 
-    public function showAllBukuDashboard()
+    public function showAllBukuDashboard(Request $request)
     {
-        $buku = buku::with('getKategori','getUser')->get();
-        return view('dashboard_admin.pages.buku', compact('buku'));
+        $query = Buku::with('getKategori', 'getUser');
+
+        if ($request->has('kategori')) {
+            if ($request->kategori != 'All Buku') {
+                $query->whereHas('getKategori', function ($q) use ($request) {
+                    $q->where('nama_kategori', $request->kategori);
+                });
+            }
+        }
+
+        $buku = $query->get();
+        $kategori = Kategori::all();
+        return view('dashboard_admin.pages.buku', compact('buku','kategori'));
     }
     public function deleteBukuDashboard($id)
     {
-        $buku = Buku::find($id);
+        $buku = buku::find($id);
 
         if (($buku->file)) {
             $filePath = public_path('assets/' . $buku->file);
@@ -36,7 +50,7 @@ class bukuController extends Controller
                 unlink($filePath);
             }
         }
-        Buku::destroy($buku->id);
+        buku::destroy($buku->id);
         return redirect()->route('buku.dashboard');
     }
     public function viewAddBukuDashboard()
@@ -48,9 +62,9 @@ class bukuController extends Controller
     {
         
         $data = $request->validate([
-            'judul' => 'required|string|max:255',
+            'judul' => 'required|max:255',
             'id_kategori' => 'required|exists:kategori,id',
-            'deskripsi' => 'required|string',
+            'deskripsi' => 'required',
             'jumlah' => 'required|integer|min:1',
             'file' => 'required|mimes:pdf|max:2040800',
             'cover' => 'required|image|mimes:jpeg,jpg,png|max:70000',
@@ -71,7 +85,7 @@ class bukuController extends Controller
             $data['cover'] = $coverName;
         }
 
-        Buku::create([
+        buku::create([
             'judul' => $data['judul'],
             'id_kategori' => $data['id_kategori'],
             'id_user' => Auth::user()->id,
@@ -84,7 +98,7 @@ class bukuController extends Controller
         return redirect()->route('buku.dashboard')->with('success', 'Buku berhasil ditambahkan.');
     }
 
-    public function downloadFiles(Request $request, $file) {
+    public function downloadFiles($file) {
         $buku = buku::where('file', $file)->first();
         $filebuku = $buku->file;
         $filePath = public_path('assets/'.$filebuku);
@@ -111,9 +125,9 @@ class bukuController extends Controller
     public function editBukuDashboard(Request $request, $id)
     {
         $data = $request->validate([
-            'judul' => 'required|string|max:255',
+            'judul' => 'required|max:255',
             'id_kategori' => 'required|exists:kategori,id',
-            'deskripsi' => 'required|string',
+            'deskripsi' => 'required',
             'jumlah' => 'required|integer|min:1',
             'file' => 'mimes:pdf|max:2040800',
             'cover' => 'image|mimes:jpeg,jpg,png|max:70000',
@@ -177,5 +191,16 @@ class bukuController extends Controller
             $buku->save();
 
         return redirect()->route('buku.dashboard')->with('success', 'Buku berhasil diedit.');
+    }
+
+    public function cetakLaporanPdf() {
+        $data = buku::with('getKategori','getUser')->get();
+        $pdf = Pdf::loadView('dashboard_admin.pages.buku_pdf', ['buku' => $data]);
+        return $pdf->download('data-buku'.Carbon::now()->timestamp.'.pdf');
+    }
+
+    public function cetakLaporanExcel() {
+        // return Excel::download(new BukuExport, 'data-buku'.Carbon::now()->timestamp.'.xlsx');
+        return (new BukuExport)->download('data-buku'.Carbon::now()->timestamp.'.xlsx');
     }
 }

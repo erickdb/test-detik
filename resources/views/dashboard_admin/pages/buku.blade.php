@@ -1,6 +1,6 @@
 @extends('dashboard_admin.layout.template')
 
-@section('title', 'PWH | Buku')
+@section('title', 'Admin | Buku')
 
 @section('content')
     <div class="container">
@@ -10,9 +10,34 @@
                 {{ session('success') }}
             </div>
         @endif
-        <div class="d-flex mb-3">
-            <a href="{{ route('buku.view.add') }}" class="btn btn-primary ms-auto">Tambah</a>
+        @if(request('kategori'))
+            <div class="alert alert-info">
+                Menampilkan buku berdasarkan kategori: {{ request('kategori') }}
+            </div>
+        @endif
+        <div class="col-md-6 col-sm-3 mb-3 gap-3">
+            <a href="{{ route('buku.pdf') }}" class="btn btn-danger mb-3" title="Export to PDF">
+                <i class="bi bi-file-earmark-pdf-fill"></i> Cetak PDF
+            </a>
+            <a href="{{ route('buku.excel') }}" class="btn btn-success mb-3" title="Export to PDF">
+                <i class="bi bi-file-earmark-pdf-fill"></i> Cetak Excel
+            </a>
+            <a href="{{ route('buku.view.add') }}" class="btn btn-primary mb-3">Tambah Buku</a>
         </div>
+        <form action="{{ route('buku.dashboard') }}" method="GET" enctype="multipart/form-data">
+            <div class="d-flex mb-3 gap-2">
+                <select class="form-select" id="kategori" name="kategori" style="width: 150px;">
+                    <option value="All Buku" {{ request('kategori') == 'All kategori' ? 'selected' : '' }}>All Buku</option>
+                    @foreach ($kategori as $kat)
+                        <option value="{{ $kat->nama_kategori }}" {{ request('kategori') == $kat->nama_kategori ? 'selected' : '' }}>
+                            {{ $kat->nama_kategori }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit" class="btn btn-primary">Filter Kategori</button>
+            </div>
+        </form>
+
         <table id="myTable" class="display">
             <thead>
                 <tr>

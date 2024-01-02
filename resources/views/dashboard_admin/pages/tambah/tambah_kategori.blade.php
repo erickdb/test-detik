@@ -1,6 +1,6 @@
 @extends('dashboard_admin.layout.template')
 
-@section('title', 'PWH | Kategori')
+@section('title', 'Admin | Kategori')
 
 @section('content')
     <div class="container">

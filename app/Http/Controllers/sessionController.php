@@ -12,7 +12,7 @@ use Symfony\Contracts\Service\Attribute\Required;
 class sessionController extends Controller
 {
     function index() {
-        return view('login');
+        return view('auth.login');
     }
     function login(Request $request) {
         $request->validate([
@@ -44,7 +44,7 @@ class sessionController extends Controller
     }
 
     function registerIndex() {
-        return view('register');
+        return view('auth.register');
     }
 
     function register(Request $request) {
